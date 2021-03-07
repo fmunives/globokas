@@ -16,9 +16,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { SuccessComponent } from './success/success.component';
+import { FailureComponent } from './failure/failure.component';
+import { LoginComponent } from './login/login.component';
+import { ValidationSunatComponent } from './validation-sunat/validation-sunat.component';
 
 @NgModule({
-  declarations: [AppComponent, ProspectSignUpComponent],
+  declarations: [AppComponent, ProspectSignUpComponent, SuccessComponent, FailureComponent, LoginComponent, ValidationSunatComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

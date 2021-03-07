@@ -1,93 +1,139 @@
-<form class="form-general">
-  <h3 class="text-center">!Se un agente multibanco kasnet!</h3>
-  <mat-form-field class="example-full-width">
-    <mat-label>Nombres</mat-label>
-    <input matInput placeholder="Tu nombre" value="" />
-  </mat-form-field>
-
-  <mat-form-field class="example-full-width">
-    <mat-label>Apellido Paterno</mat-label>
-    <input matInput placeholder="Tu apellido paterno" value="" />
-  </mat-form-field>
-
-  <mat-form-field class="example-full-width">
-    <mat-label>Apellido Materno</mat-label>
-    <input matInput placeholder="Tu apellido materno" value="" />
-  </mat-form-field>
-
-  <div class="form-email">
-    <mat-form-field class="field-email">
-      <mat-label>Correo Electrónico</mat-label>
-      <input matInput placeholder="Tu correo" value="" />
-    </mat-form-field>
-    <div>
-      <span class="domain-email">@</span>
-    </div>
+<div class="container">
+  <form
+    class="form-general"
+    (ngSubmit)="onSubmit(Prospectform)"
+    #Prospectform="ngForm"
+  >
+    <h3 class="text-center">!Se un agente multibanco kasnet!</h3>
     <mat-form-field class="example-full-width">
-      <mat-select
-        [(value)]="emailSelected.value"
-        (selectionChange)="setEmailValue($event.value)"
-      >
-        <mat-option *ngFor="let email of emails" [value]="email.value">
-          {{ email.label }}
+      <mat-label>Nombres</mat-label>
+      <input
+        matInput
+        placeholder="Tu nombre"
+        name="name"
+        [(ngModel)]="client.name"
+        required
+      />
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Apellido Paterno</mat-label>
+      <input
+        matInput
+        placeholder="Tu apellido paterno"
+        name="paternalSurname"
+        [(ngModel)]="client.paternalSurname"
+        required
+      />
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Apellido Materno</mat-label>
+      <input
+        matInput
+        placeholder="Tu apellido materno"
+        name="maternalSurname"
+        [(ngModel)]="client.maternalSurname"
+      />
+    </mat-form-field>
+
+    <div class="form-email">
+      <mat-form-field class="field-email">
+        <mat-label>Correo Electrónico</mat-label>
+        <input
+          matInput
+          placeholder="Tu correo"
+          required
+          name="emailName"
+          [(ngModel)]="emailName"
+        />
+      </mat-form-field>
+      <div>
+        <span class="domain-email">@</span>
+      </div>
+      <mat-form-field class="example-full-width">
+        <mat-select [(value)]="domainSelected" required>
+          <mat-option *ngFor="let domain of domains" [value]="domain.value">
+            {{ domain.viewValue }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="field-email" *ngIf="domainSelected === 'otro'">
+      <mat-label>Ingrese el dominio</mat-label>
+      <input
+        matInput
+        placeholder="mail.com"
+        name="otherEmailDomain"
+        [(ngModel)]="otherEmailDomain"
+        required
+      />
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Cuenta con RUC?</mat-label>
+      <mat-select name="RUCexists" required [(ngModel)]="client.RUCexists">
+        <mat-option *ngFor="let item of haveRuc" [value]="item.value">
+          {{ item.label }}
         </mat-option>
       </mat-select>
     </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Departamento</mat-label>
+      <mat-select
+        (selectionChange)="getprovinces($event.value)"
+        name="departament"
+        required
+        [(ngModel)]="departament"
+      >
+        <mat-option
+          *ngFor="let departament of departaments"
+          [value]="departament"
+        >
+          {{ departament.nombre_ubigeo }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Provincia</mat-label>
+      <mat-select
+        (selectionChange)="getDistricts($event.value)"
+        name="province"
+        required
+        [(ngModel)]="province"
+      >
+        <mat-option *ngFor="let province of provinces" [value]="province">
+          {{ province.nombre_ubigeo }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Distrito</mat-label>
+      <mat-select name="district" required [(ngModel)]="district">
+        <mat-option
+          *ngFor="let district of districts"
+          [value]="district.nombre_ubigeo"
+        >
+          {{ district.nombre_ubigeo }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="text-center">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!Prospectform.form.valid"
+      >
+        <mat-icon>add_circle</mat-icon> Registrarse
+      </button>
+    </div>
+  </form>
+  <div class="text-center login">
+    <a routerLink="/login">Deseo iniciar sesión</a>
   </div>
-
-  <mat-form-field class="field-email" *ngIf="emailSelected === 'otro'">
-    <mat-label>Ingrese el dominio</mat-label>
-    <input matInput placeholder="mail.com" value="" />
-  </mat-form-field>
-
-  <mat-form-field class="example-full-width">
-    <mat-label>Cuenta con RUC?</mat-label>
-    <mat-select>
-      <mat-option *ngFor="let value of haveRuc" [value]="value">
-        {{ value }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field class="example-full-width">
-    <mat-label>Departamento</mat-label>
-    <mat-select (selectionChange)="getProvincies($event.value)">
-      <mat-option
-        *ngFor="let departament of departaments"
-        [value]="departament.id_ubigeo"
-      >
-        {{ departament.nombre_ubigeo }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field class="example-full-width">
-    <mat-label>Provincia</mat-label>
-    <mat-select (selectionChange)="getDistricts($event.value)">
-      <mat-option
-        *ngFor="let province of provincies"
-        [value]="province.id_ubigeo"
-      >
-        {{ province.nombre_ubigeo }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field class="example-full-width">
-    <mat-label>Distrito</mat-label>
-    <mat-select>
-      <mat-option
-        *ngFor="let district of districts"
-        [value]="district.id_ubigeo"
-      >
-        {{ district.nombre_ubigeo }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <div class="text-center">
-    <button mat-raised-button color="primary">
-      <mat-icon>add_circle</mat-icon> Registrarse
-    </button>
-  </div>
-</form>
+</div>

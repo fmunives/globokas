@@ -1,43 +1,72 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FirebaseService } from '../firebase.service.js';
+import { UserModel } from '../model/user.model.js';
+
+const RUC_EXISTS = [
+  {
+    label: 'Si',
+    value: true,
+  },
+  {
+    label: 'No',
+    value: false,
+  },
+];
+
+const DOMAINS = [
+  {
+    viewValue: 'gmail.com',
+    value: 'gmail',
+  },
+  {
+    viewValue: 'yahoo.com',
+    value: 'yahoo',
+  },
+  {
+    viewValue: 'outlook.com',
+    value: 'outlook',
+  },
+  {
+    viewValue: 'otros',
+    value: 'otro',
+  },
+];
+
 @Component({
   selector: 'app-prospect-sign-up',
   templateUrl: './prospect-sign-up.component.html',
   styleUrls: ['./prospect-sign-up.component.scss'],
 })
 export class ProspectSignUpComponent implements OnInit {
-  haveRuc: any[] = ['Si', 'No'];
-  emails: any[] = [
-    {
-      label: 'gmail.com',
-      value: 'gmail',
-    },
-    {
-      label: 'yahoo.com',
-      value: 'yahoo',
-    },
-    {
-      label: 'outlook.com',
-      value: 'outlook',
-    },
-    {
-      label: 'otros',
-      value: 'otro',
-    },
-  ];
-  emailSelected: any = this.emails[0];
+  client: UserModel = new UserModel();
+
+  emailName: string = '';
+  emailDomain: any = '';
+  otherEmailDomain: string = '';
+
+  departament: string = '';
+  province: string = '';
+  district: string = '';
+  haveRuc: any[] = RUC_EXISTS;
+
+  domains: any[] = DOMAINS;
+  domainSelected: any = this.domains[0].value;
+
   departaments: any[] = [];
-  provincies: any[] = [];
+  provinces: any[] = [];
   districts: any[] = [];
 
-  constructor(private fs: FirebaseService) {
+  constructor(private fs: FirebaseService, private route: Router) {
     this.getDepartaments();
   }
 
   ngOnInit(): void {}
 
-  setEmailValue(valueEmail: string) {
-    this.emailSelected = valueEmail;
+  setDomainEmail(domain: any) {
+    this.domainSelected = domain;
+    console.log('domain selected 2: ', this.domainSelected);
   }
 
   getDepartaments() {
@@ -46,15 +75,44 @@ export class ProspectSignUpComponent implements OnInit {
       .subscribe((data: any) => (this.departaments = data));
   }
 
-  getProvincies(idDep: string) {
+  getprovinces(Dep: any) {
+    console.log({ Dep });
     this.fs
-      .getPlacesBy('provincies')
-      .subscribe((data: any) => (this.provincies = data[idDep]));
+      .getPlacesBy('provinces')
+      .subscribe((data: any) => (this.provinces = data[Dep.id_ubigeo]));
   }
 
-  getDistricts(idProv: string) {
+  getDistricts(Prov: any) {
     this.fs
       .getPlacesBy('districts')
-      .subscribe((data: any) => (this.districts = data[idProv]));
+      .subscribe((data: any) => (this.districts = data[Prov.id_ubigeo]));
+  }
+
+  onSubmit(form: NgForm) {
+    this.setProspect(form);
+
+    this.fs.createClient(this.client).subscribe((resp: any) => {
+      if (resp.name) {
+        this.route.navigate(['/success']);
+      } else {
+        this.route.navigate(['/failure']);
+      }
+    });
+  }
+
+  private setProspect(form: NgForm) {
+    let currentDomain = this.domains.find(
+      (item) => item.value === this.domainSelected
+    );
+
+    this.client.departament = form.value.departament.nombre_ubigeo;
+    this.client.province = form.value.province.nombre_ubigeo;
+    this.client.district = form.value.district;
+    this.client.email =
+      form.value.emailName +
+      '@' +
+      (this.domainSelected === 'otro'
+        ? form.value.otherEmailDomain
+        : currentDomain.viewValue);
   }
 }
